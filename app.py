@@ -4,15 +4,16 @@ import fire
 
 def add_separator(line):
     last_char = line[-1] if line else ''
-    if last_char != '}' and last_char != '{' and last_char != ';' and line and line[
+    sline = line.strip(' \t')
+    if last_char != '}' and last_char != '{' and last_char != ';' and sline and line[
             0] != '/':
         line = line + ';'
     return line
 
 
 def blank_spaces_eq(line):
-    line = re.sub(r'([^\s^\-^\+])=', r'\1 =', line)
-    line = re.sub(r'=([^\s^\>])', r'= \1', line)
+    line = re.sub(r'([^\s^\-^\+\=])=', r'\1 =', line)
+    line = re.sub(r'=([^\s^\>\=])', r'= \1', line)
     return line
 
 
@@ -51,10 +52,10 @@ def fix_indent(lines):
     indent = 0
     tranformed_lines = []
     for line in lines:
-        line = line.strip(' ')
-        if '}' in line:
+        line = line.strip(' \t')
+        if '}' in line and '{' not in line:
             indent -= 1
-        line = '    ' * indent  + line if indent else line
+        line = '    ' * indent + line if indent else line
         tranformed_lines.append(line)
         open_brackets += 1 if '{' in line else 0
         closed_brackets += 1 if '}' in line else 0
@@ -69,11 +70,8 @@ tranforms = [
 ]
 
 
-def run(source, i=''):
-    with open(source, "r") as fp:
-        data = fp.read()
-
-    data = data.replace('\n\n\n', '\n\n')
+def fmt(source):
+    data = source.replace('\n\n\n', '\n\n')
 
     filtered = []
     for line in data.split('\n'):
@@ -82,8 +80,14 @@ def run(source, i=''):
         filtered.append(line)
 
     filtered = fix_indent(filtered)
+    return '\n'.join(filtered)
 
-    cleared_source = '\n'.join(filtered)
+
+def run(source, i=''):
+    with open(source, "r") as fp:
+        data = fp.read()
+
+    cleared_source = fmt(data)
     if not i:
         print(cleared_source)
     else:
