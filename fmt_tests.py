@@ -15,3 +15,26 @@ contract T {
 }
 """
     assert fmt(sample) == expected
+
+
+def test_blank_spaces_eq():
+    sample = """
+Amount =msg.value;
+Amount= msg.value;
+Amount => msg.value;
+Amount > msg.value;
+Amount +=msg.value;
+Amount+=msg.value;
+Amount-=msg.value;
+    """
+
+    expected = """
+Amount = msg.value;
+Amount = msg.value;
+Amount => msg.value;
+Amount > msg.value;
+Amount += msg.value;
+Amount += msg.value;
+Amount -= msg.value;
+"""
+    assert fmt(sample) == expected
