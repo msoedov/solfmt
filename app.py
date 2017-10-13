@@ -1,6 +1,7 @@
 import re
 import fire
 
+version = "0.0.1"
 
 def add_separator(line):
     last_char = line[-1] if line else ''
@@ -11,7 +12,7 @@ def add_separator(line):
 
 
 def blank_spaces_eq(line):
-    line = re.sub(r'([^\s^\-^\+\=])=', r'\1 =', line)
+    line = re.sub(r'([^\s^\-^\+\=\>])=', r'\1 =', line)
     line = re.sub(r'=([^\s^\>\=])', r'= \1', line)
     return line
 
@@ -83,12 +84,12 @@ tranforms = [
 def fmt(source):
     data = source.replace('\n\n\n', '\n\n')
     data = fix_parentesis(data)
+    lines = data.split('\n')
     filtered = []
     for line in data.split('\n'):
         for t in tranforms:
             line = t(line)
         filtered.append(line)
-
     filtered = fix_indent(filtered)
     return '\n'.join(filtered)
 

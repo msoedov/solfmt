@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from setuptools import setup
-
 try:
     long_description = open("Readme.md").read()
 except IOError:
