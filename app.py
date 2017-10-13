@@ -4,15 +4,20 @@ import fire
 version = "0.0.1"
 
 def add_separator(line):
-    last_char = line[-1] if line else ''
     sline = line.strip(' \t')
-    if last_char != '}' and last_char != '{' and last_char != ';' and sline and line[0] != '/':
+    last_char = sline[-1] if sline else ''
+    if not sline:
+        return line
+    if sline[0] == '/':
+        return line
+    good_ending = '}{;/'
+    if last_char not in good_ending:
         line = line + ';'
     return line
 
 
 def blank_spaces_eq(line):
-    line = re.sub(r'([^\s^\-^\+\=\>])=', r'\1 =', line)
+    line = re.sub(r'([^\s^\-^\+\=\>\!\<])=', r'\1 =', line)
     line = re.sub(r'=([^\s^\>\=])', r'= \1', line)
     return line
 
@@ -31,10 +36,10 @@ def clear_brackets(line):
 
 
 def blank_spaces_plus(line):
-    line = re.sub(r'([^\s])\+', r'\1 +', line)
-    line = re.sub(r'([^\s])\-', r'\1 -', line)
-    line = re.sub(r'\+([^\s^\=])', r'+ \1', line)
-    line = re.sub(r'\-([^\s^\=])', r'- \1', line)
+    line = re.sub(r'([^\s\+])\+', r'\1 +', line)
+    line = re.sub(r'([^\s\-])\-', r'\1 -', line)
+    line = re.sub(r'\+([^\s^\=\+])', r'+ \1', line)
+    line = re.sub(r'\-([^\s^\=\-])', r'- \1', line)
     return line
 
 
