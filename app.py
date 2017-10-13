@@ -69,7 +69,7 @@ tranforms = [
 ]
 
 
-def run(source):
+def run(source, i=''):
     with open(source, "r") as fp:
         data = fp.read()
 
@@ -82,7 +82,13 @@ def run(source):
         filtered.append(line)
 
     filtered = fix_indent(filtered)
-    print('\n'.join(filtered))
+
+    cleared_source = '\n'.join(filtered)
+    if not i:
+        print(cleared_source)
+    else:
+        with open(source, "w") as fp:
+            fp.write(cleared_source)
 
 
 def entrypoint():
