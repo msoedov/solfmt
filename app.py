@@ -6,9 +6,9 @@ version = "0.0.1"
 def add_separator(line):
     sline = line.strip(' \t')
     last_char = sline[-1] if sline else ''
-    if not sline:
+    if '/' in sline:
         return line
-    if sline[0] == '/':
+    if not sline:
         return line
     good_ending = '}{;/'
     if last_char not in good_ending:
