@@ -94,20 +94,29 @@ def fmt(source):
     return '\n'.join(filtered)
 
 
-def run(source, i=''):
-    with open(source, "r") as fp:
-        data = fp.read()
 
-    cleared_source = fmt(data)
-    if not i:
-        print(cleared_source)
-    else:
-        with open(source, "w") as fp:
-            fp.write(cleared_source)
+class Fmt:
+
+    def run(self, source, i=''):
+        with open(source, "r") as fp:
+            data = fp.read()
+
+        cleared_source = fmt(data)
+        if not i:
+            print(cleared_source)
+        else:
+            with open(source, "w") as fp:
+                fp.write(cleared_source)
+
+    run.__doc__ = """
+    Solidity fmt
+
+    Version {}
+    """.format(version)
 
 
 def entrypoint():
-    fire.Fire(run)
+    fire.Fire(Fmt().run)
 
 
 if __name__ == "__main__":
