@@ -1,7 +1,6 @@
 from app import fmt
 
 
-
 def test_ident():
     sample = """
     contract T {
@@ -12,6 +11,21 @@ def test_ident():
     expected = """
 contract T {
     modifier A { if (msg.sender == A) _; }
+}
+"""
+    assert fmt(sample) == expected
+
+
+def test_ident_v2():
+    sample = """
+    contract T
+{
+}
+    """
+
+    expected = """
+contract T {
+
 }
 """
     assert fmt(sample) == expected
@@ -36,5 +50,30 @@ Amount > msg.value;
 Amount += msg.value;
 Amount += msg.value;
 Amount -= msg.value;
+"""
+    assert fmt(sample) == expected
+
+
+def test_add_semicol():
+    sample = """
+Amount = msg.value
+Call(1)
+function A(bool b, string reason) {
+    if (!b) {
+        C = reason
+        require(b)
+    }
+}
+    """
+
+    expected = """
+Amount = msg.value;
+Call(1);
+function A(bool b, string reason) {
+    if (!b) {
+        C = reason;
+        require(b);
+    }
+}
 """
     assert fmt(sample) == expected

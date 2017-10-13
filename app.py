@@ -5,8 +5,7 @@ import fire
 def add_separator(line):
     last_char = line[-1] if line else ''
     sline = line.strip(' \t')
-    if last_char != '}' and last_char != '{' and last_char != ';' and sline and line[
-            0] != '/':
+    if last_char != '}' and last_char != '{' and last_char != ';' and sline and line[0] != '/':
         line = line + ';'
     return line
 
@@ -42,6 +41,10 @@ def tabs_to_spaces(line):
     return line.replace('\t', ' ' * 4)
 
 
+def fix_parentesis(line):
+    return re.sub(r'\n\s*{', ' {\n', line)
+
+
 def clear_comment(line):
     return re.sub(r'^\/\/([^\s])', r'// \1', line)
 
@@ -53,6 +56,9 @@ def fix_indent(lines):
     tranformed_lines = []
     for line in lines:
         line = line.strip(' \t')
+        if not line:
+            tranformed_lines.append('')
+            continue
         if '}' in line and '{' not in line:
             indent -= 1
         line = '    ' * indent + line if indent else line
@@ -64,15 +70,19 @@ def fix_indent(lines):
 
 
 tranforms = [
-    add_separator, blank_spaces_eq,
-    blank_spaces_plus, blank_spaces_coma,
-    clear_comment, tabs_to_spaces, clear_brackets
+    blank_spaces_eq,
+    blank_spaces_plus,
+    blank_spaces_coma,
+    clear_comment,
+    tabs_to_spaces,
+    clear_brackets,
+    add_separator,
 ]
 
 
 def fmt(source):
     data = source.replace('\n\n\n', '\n\n')
-
+    data = fix_parentesis(data)
     filtered = []
     for line in data.split('\n'):
         for t in tranforms:
