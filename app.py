@@ -2,7 +2,7 @@ import re
 import os
 import fire
 
-version = "0.0.3"
+version = "0.0.4"
 
 def add_separator(line):
     sline = line.strip(' \t')
@@ -123,7 +123,7 @@ class Fmt:
             data = fp.read()
 
         cleared_source = fmt(data)
-        if cleared_source == data:
+        if cleared_source != data:
             return source
         if not inplace:
             print(cleared_source)
