@@ -2,7 +2,7 @@ import re
 import os
 import fire
 
-version = "0.0.2"
+version = "0.0.3"
 
 def add_separator(line):
     sline = line.strip(' \t')
@@ -114,19 +114,23 @@ class Fmt:
 
     def run(self, i='', root='.'):
         pathes = discover_sol_files(root)
-        [self._format_one(v, i) for v in pathes]
+        changed = [self._format_one(v, i) for v in pathes]
+        changed = [v for v in changed if v]
+        print(changed)
 
     def _format_one(self, source, inplace=False):
-        print(discover_sol_files('.'))
         with open(source, "r") as fp:
             data = fp.read()
 
         cleared_source = fmt(data)
+        if cleared_source == data:
+            return source
         if not inplace:
             print(cleared_source)
         else:
             with open(source, "w") as fp:
                 fp.write(cleared_source)
+        return
 
     run.__doc__ = """
     Solidity fmt
