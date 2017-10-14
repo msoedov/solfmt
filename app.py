@@ -1,7 +1,8 @@
 import re
+import os
 import fire
 
-version = "0.0.1"
+version = "0.0.2"
 
 def add_separator(line):
     sline = line.strip(' \t')
@@ -99,15 +100,29 @@ def fmt(source):
     return '\n'.join(filtered)
 
 
+def discover_sol_files(path):
+    sols = []
+    for root, dirs, files in os.walk(path):
+        for file in files:
+            if not file.endswith(".sol"):
+                continue
+            sols.append('{}/{}'.format(root, file))
+    return sols
+
 
 class Fmt:
 
-    def run(self, source, i=''):
+    def run(self, i='', root='.'):
+        pathes = discover_sol_files(root)
+        [self._format_one(v, i) for v in pathes]
+
+    def _format_one(self, source, inplace=False):
+        print(discover_sol_files('.'))
         with open(source, "r") as fp:
             data = fp.read()
 
         cleared_source = fmt(data)
-        if not i:
+        if not inplace:
             print(cleared_source)
         else:
             with open(source, "w") as fp:

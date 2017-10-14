@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from setuptools import setup
+from app import version
 try:
     long_description = open("Readme.md").read()
 except IOError:
@@ -8,8 +9,8 @@ except IOError:
 
 setup(
     name="solfmt",
-    version="0.1.1",
-    description="Solfmt code formatter for Solidity",
+    version=version,
+    description="Solfmt a code formatter for Solidity",
     license="MIT",
     author="Alex Myasoedov",
     author_email="msoedov@gmail.com",

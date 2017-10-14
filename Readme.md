@@ -14,7 +14,7 @@ pip install solfmt --user --upgrade
 ## Usage
 
 ```shell
-solfmt contract.sol -i
+solfmt -i .
 ```
 
 
