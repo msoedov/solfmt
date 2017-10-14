@@ -27,3 +27,6 @@ solfmt contract.sol -i
   - Fixes mix tabs and spaces
   - Fixes trailing spaces after/before `,=(){}><`
   - Fixes indentation
+
+
+ It still under development and can break your code.
