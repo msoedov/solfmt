@@ -1,4 +1,4 @@
-from app import fmt
+from solfmt import fmt
 
 
 def test_ident():

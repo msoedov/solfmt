@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from setuptools import setup
-from app import version
+from solfmt import version
 try:
     long_description = open("Readme.md").read()
 except IOError:
@@ -15,9 +15,9 @@ setup(
     author="Alex Myasoedov",
     author_email="msoedov@gmail.com",
     packages=['.'],
-    install_requires=['fire'],
+    install_requires=[],
     entry_points={
-        'console_scripts': ['solfmt=app:entrypoint'],
+        'console_scripts': ['solfmt=solfmt:entrypoint'],
     },
     long_description=long_description,
     classifiers=[

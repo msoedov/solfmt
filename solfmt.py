@@ -1,8 +1,8 @@
 import re
 import os
-import fire
+import argparse
 
-version = "0.0.4"
+version = "0.0.6"
 
 def add_separator(line):
     sline = line.strip(' \t')
@@ -26,6 +26,7 @@ def blank_spaces_eq(line):
 def blank_spaces_coma(line):
     line = re.sub(r',([^\s])', r', \1', line)
     line = re.sub(r'\s+\,', r',', line)
+    line = re.sub(r'\s+\;', r';', line)
     return line
 
 
@@ -49,7 +50,9 @@ def tabs_to_spaces(line):
 
 
 def fix_parentesis(line):
-    return re.sub(r'\n\s*{', ' {\n', line)
+    line = re.sub(r'\n\s*{', ' {\n', line)
+    line = re.sub(r'([^\s]){', r'\1 {', line)
+    return line
 
 
 def clear_comment(line):
@@ -112,25 +115,26 @@ def discover_sol_files(path):
 
 class Fmt:
 
-    def run(self, i='', root='.'):
+    def run(self, inplace, root, **opts):
         pathes = discover_sol_files(root)
-        changed = [self._format_one(v, i) for v in pathes]
+        changed = [self._format_one(v, inplace) for v in pathes]
         changed = [v for v in changed if v]
-        print(changed)
+        if changed:
+            print(changed)
 
     def _format_one(self, source, inplace=False):
         with open(source, "r") as fp:
             data = fp.read()
 
         cleared_source = fmt(data)
-        if cleared_source != data:
-            return source
+        if cleared_source == data:
+            return ''
         if not inplace:
             print(cleared_source)
         else:
             with open(source, "w") as fp:
                 fp.write(cleared_source)
-        return
+        return source
 
     run.__doc__ = """
     Solidity fmt
@@ -140,7 +144,13 @@ class Fmt:
 
 
 def entrypoint():
-    fire.Fire(Fmt().run)
+    parser = argparse.ArgumentParser(description='Solidity formatter.')
+    parser.add_argument('root',
+                        help='Path')
+    parser.add_argument('-i', '--inplace', default=False, action="store_true",
+                        help='Write in place')
+    args = parser.parse_args()
+    Fmt().run(**vars(args))
 
 
 if __name__ == "__main__":
