@@ -2,7 +2,7 @@ import re
 import os
 import argparse
 
-version = "0.0.6"
+version = "0.1.7"
 
 def add_separator(line):
     sline = line.strip(' \t')
