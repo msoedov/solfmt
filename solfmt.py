@@ -1,8 +1,10 @@
 import re
 import os
 import argparse
+import difflib
 
-version = "0.1.7"
+version = "0.1.8"
+
 
 def add_separator(line):
     sline = line.strip(' \t')
@@ -114,13 +116,9 @@ def discover_sol_files(path):
 
 
 class Fmt:
-
     def run(self, inplace, root, **opts):
         pathes = discover_sol_files(root)
         changed = [self._format_one(v, inplace) for v in pathes]
-        changed = [v for v in changed if v]
-        if changed:
-            print(changed)
 
     def _format_one(self, source, inplace=False):
         with open(source, "r") as fp:
@@ -132,9 +130,18 @@ class Fmt:
         if not inplace:
             print(cleared_source)
         else:
+            print(self._diff(data, cleared_source, source))
             with open(source, "w") as fp:
                 fp.write(cleared_source)
         return source
+
+    def _diff(self, before, after, source_name):
+        return "\n".join(
+            difflib.unified_diff(
+                before.splitlines(),
+                after.splitlines(),
+                fromfile=source_name,
+                tofile=source_name))
 
     run.__doc__ = """
     Solidity fmt
@@ -145,10 +152,13 @@ class Fmt:
 
 def entrypoint():
     parser = argparse.ArgumentParser(description='Solidity formatter.')
-    parser.add_argument('root',
-                        help='Path')
-    parser.add_argument('-i', '--inplace', default=False, action="store_true",
-                        help='Write in place')
+    parser.add_argument('root', help='Path')
+    parser.add_argument(
+        '-i',
+        '--inplace',
+        default=False,
+        action="store_true",
+        help='Write in place')
     args = parser.parse_args()
     Fmt().run(**vars(args))
 

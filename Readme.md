@@ -15,11 +15,27 @@ pip install solfmt --user --upgrade
 
 ```shell
 solfmt . -i
+
+
+--- Contract.sol
+
++++ Contract.sol
+
+@@ -112,7 +112,7 @@
+
+     }
+
+     function TotalAmount() returns(uint) {
+-        return Amount + Fee ;
++        return Amount + Fee;
+     }
+
+     function refund() private {
 ```
 
 
 ## Notes
-
+- Feel free to fill a bug/issue.
 - It has a dead simple implementation based on reg exp rules.
 - There is no solidity AST parsing involved for now.
 - It only supports a minimalistic set of transformation
