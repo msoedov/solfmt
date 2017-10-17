@@ -5,60 +5,100 @@ import difflib
 
 version = "0.1.8"
 
+class Transformer(object):
+    def __init__(self, *arg):
+        super(Transformer, self).__init__()
+        self.arg = arg
 
-def add_separator(line):
-    sline = line.strip(' \t')
-    last_char = sline[-1] if sline else ''
-    if '/' in sline:
+    @classmethod
+    def new(cls):
+        return cls().inspect
+
+    def inspect(self, line):
+        raise NotImplementedError
+
+    def explain(self, old, new):
+        if old == new:
+            return
+        name = self.__class__.__name__
+        print("{}:\n- {}\n+".format(name, old, new))
+
+
+class AddCol(Transformer):
+
+    def inspect(self, line):
+        sline = line.strip(' \t')
+        last_char = sline[-1] if sline else ''
+        if '/' in sline:
+            return line
+        if not sline:
+            return line
+        good_ending = '}{;/'
+        if last_char not in good_ending:
+            line = line + ';'
         return line
-    if not sline:
+
+
+class SpacesEqOp(Transformer):
+
+    def inspect(self, line):
+        line = re.sub(r'([^\s^\-^\+\=\>\!\<])=', r'\1 =', line)
+        line = re.sub(r'=([^\s^\>\=])', r'= \1', line)
         return line
-    good_ending = '}{;/'
-    if last_char not in good_ending:
-        line = line + ';'
-    return line
 
 
-def blank_spaces_eq(line):
-    line = re.sub(r'([^\s^\-^\+\=\>\!\<])=', r'\1 =', line)
-    line = re.sub(r'=([^\s^\>\=])', r'= \1', line)
-    return line
+class SpacesCommaOp(Transformer):
+
+    def inspect(self, line):
+        line = re.sub(r',([^\s])', r', \1', line)
+        line = re.sub(r'\s+\,', r',', line)
+        line = re.sub(r'\s+\;', r';', line)
+        return line
 
 
-def blank_spaces_coma(line):
-    line = re.sub(r',([^\s])', r', \1', line)
-    line = re.sub(r'\s+\,', r',', line)
-    line = re.sub(r'\s+\;', r';', line)
-    return line
+class SpacesSignsOp(Transformer):
+
+    def inspect(self, line):
+        line = re.sub(r'([^\s\+])\+', r'\1 +', line)
+        line = re.sub(r'([^\s\-])\-', r'\1 -', line)
+        line = re.sub(r'\+([^\s^\=\+])', r'+ \1', line)
+        line = re.sub(r'\-([^\s^\=\-])', r'- \1', line)
+        return line
 
 
-def clear_brackets(line):
-    line = re.sub(r'\s\)', r')', line)
-    line = re.sub(r'\)([^\s^;^,])', r') \1', line)
-    line = re.sub(r'\)\s*\;', r');', line)
-    return line
+class CurlyBrackets(Transformer):
+
+    def inspect(self, line):
+        line = re.sub(r'\s\)', r')', line)
+        line = re.sub(r'\)([^\s^;^,])', r') \1', line)
+        line = re.sub(r'\)\s*\;', r');', line)
+        return line
 
 
-def blank_spaces_plus(line):
-    line = re.sub(r'([^\s\+])\+', r'\1 +', line)
-    line = re.sub(r'([^\s\-])\-', r'\1 -', line)
-    line = re.sub(r'\+([^\s^\=\+])', r'+ \1', line)
-    line = re.sub(r'\-([^\s^\=\-])', r'- \1', line)
-    return line
+class TabsIdent(Transformer):
+
+    def inspect(self, line):
+        return line.replace('\t', ' ' * 4)
 
 
-def tabs_to_spaces(line):
-    return line.replace('\t', ' ' * 4)
+class CommentsFmt(Transformer):
+
+    def inspect(self, line):
+        return re.sub(r'^\/\/([^\s])', r'// \1', line)
+
+
+class Parentesis(Transformer):
+
+    def inspect(self, line):
+        line = re.sub(r'\n\s*{', ' {\n', line)
+        line = re.sub(r'([^\s]){', r'\1 {', line)
+        return line
 
 
 def fix_parentesis(line):
     line = re.sub(r'\n\s*{', ' {\n', line)
     line = re.sub(r'([^\s]){', r'\1 {', line)
     return line
-
-
-def clear_comment(line):
-    return re.sub(r'^\/\/([^\s])', r'// \1', line)
 
 
 def fix_indent(lines):
@@ -82,13 +122,13 @@ def fix_indent(lines):
 
 
 tranforms = [
-    blank_spaces_eq,
-    blank_spaces_plus,
-    blank_spaces_coma,
-    clear_comment,
-    tabs_to_spaces,
-    clear_brackets,
-    add_separator,
+    SpacesEqOp.new(),
+    SpacesSignsOp.new(),
+    SpacesCommaOp.new(),
+    CommentsFmt.new(),
+    TabsIdent.new(),
+    CurlyBrackets.new(),
+    AddCol.new()
 ]
 
 
